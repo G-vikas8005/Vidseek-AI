@@ -1,0 +1,9 @@
+﻿opencv-python==4.8.1.78
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.1
+deepface==0.0.101
+tf-keras==2.21.0
+numpy==1.26.4
+pandas==2.3.3
+sentence-transformers==2.7.0

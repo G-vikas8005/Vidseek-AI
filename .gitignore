@@ -1,0 +1,9 @@
+ai-service/venv/
+ai-service/data/frames/
+ai-service/data/videos/
+ai-service/data/indexes/
+frontend/node_modules/
+backend/node_modules/
+*.mp4
+*.jpg
+*.png
