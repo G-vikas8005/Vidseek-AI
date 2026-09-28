@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Videos from "./pages/Videos.jsx";
 import VideoWorkspace from "./pages/VideoWorkspace.jsx";
 import About from "./pages/About.jsx";
 
@@ -26,6 +27,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/videos"
+            element={
+              <ProtectedRoute>
+                <Videos />
               </ProtectedRoute>
             }
           />

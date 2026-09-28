@@ -1,15 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-
-function scrollToVideos(attempt = 0) {
-  const videosSection = document.getElementById("videos");
-  if (videosSection) {
-    videosSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  } else if (attempt < 10) {
-    window.requestAnimationFrame(() => scrollToVideos(attempt + 1));
-  }
-}
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,19 +19,6 @@ function Navbar() {
     navigate("/login");
   };
 
-  const handleVideosNavigation = (event) => {
-    event.preventDefault();
-    setMobileMenuOpen(false);
-    navigate("/#videos");
-    scrollToVideos();
-  };
-
-  useEffect(() => {
-    if (location.pathname === "/" && location.hash === "#videos") {
-      scrollToVideos();
-    }
-  }, [location.pathname, location.hash]);
-
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
       <nav aria-label="Main navigation" className="mx-auto flex h-17 max-w-360 items-center justify-between px-4 sm:px-8">
@@ -58,7 +36,7 @@ function Navbar() {
         {isAuthenticated && (
           <div className="hidden h-full items-center gap-1 sm:flex">
             <NavLink to="/" active={isActive("/")}>Dashboard</NavLink>
-            <NavLink to="/#videos" active={location.pathname === "/" && location.hash === "#videos"} onClick={handleVideosNavigation}>Videos</NavLink>
+            <NavLink to="/videos" active={isActive("/videos")}>Videos</NavLink>
             <NavLink to="/about" active={isActive("/about")}>About</NavLink>
           </div>
         )}
@@ -117,7 +95,7 @@ function Navbar() {
                 <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{displayName}</p><p className="truncate text-xs text-slate-500">{user?.email}</p></div>
               </div>
               <MobileLink to="/" active={isActive("/")} onClick={() => setMobileMenuOpen(false)}>Dashboard</MobileLink>
-              <MobileLink to="/#videos" active={location.pathname === "/" && location.hash === "#videos"} onClick={handleVideosNavigation}>Videos</MobileLink>
+              <MobileLink to="/videos" active={isActive("/videos")} onClick={() => setMobileMenuOpen(false)}>Videos</MobileLink>
               <MobileLink to="/about" active={isActive("/about")} onClick={() => setMobileMenuOpen(false)}>About</MobileLink>
               <button type="button" onClick={handleLogout} className="mt-2 w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-700 transition-colors hover:bg-red-50">Sign out</button>
             </>

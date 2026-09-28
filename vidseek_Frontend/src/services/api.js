@@ -38,6 +38,11 @@ export function processVideo(videoId) {
   return API.post(`/videos/${videoId}/process`);
 }
 
+/** Get all videos belonging to the authenticated user */
+export function getUserVideos() {
+  return API.get("/videos");
+}
+
 /** Get all results for a specific video */
 export function getVideoResults(videoId) {
   return API.get(`/videos/${videoId}/results`);

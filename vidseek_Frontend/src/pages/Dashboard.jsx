@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { formatTime } from "../utils/time.js";
-import { normalizeVideoStatus } from "../utils/videoStatus.js";
 import VideoUpload from "../components/VideoUpload.jsx";
+import { normalizeVideoStatus } from "../utils/videoStatus.js";
 
 function Dashboard() {
-  const [recentVideos, setRecentVideos] = useState([]);
+  const [workspaceVideo, setWorkspaceVideo] = useState(null);
 
   const handleUploadSuccess = (newVideo) => {
-    setRecentVideos((videos) => {
-      const existingIndex = videos.findIndex((video) => video.id === newVideo.id);
-      if (existingIndex === -1) return [newVideo, ...videos];
-      return videos.map((video) => video.id === newVideo.id ? { ...video, ...newVideo } : video);
-    });
+    setWorkspaceVideo(newVideo);
   };
 
   return (
@@ -68,64 +63,31 @@ function Dashboard() {
       <section id="video-upload" className="scroll-mt-24 mb-14">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">Start here</p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Add a video to search</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">Active workspace</p>
+            <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Upload a video to search</h2>
           </div>
           <span className="hidden text-xs font-medium text-slate-500 sm:block">MP4 · 1–10 minutes</span>
         </div>
         <VideoUpload onUploadSuccess={handleUploadSuccess} />
       </section>
 
-      <section id="videos" className="scroll-mt-24">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-950">Recent uploads</h2>
-            <p className="mt-1 text-sm text-slate-600">Uploads from this session. Existing-library sync is not available yet.</p>
+      {workspaceVideo && (
+        <section className="mb-10 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">Current working video</p>
+              <h3 className="mt-1 text-lg font-bold tracking-tight text-slate-950">{workspaceVideo.filename}</h3>
+            </div>
+            <StatusBadge status={workspaceVideo.status} />
           </div>
-          <span className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">{recentVideos.length} in this session</span>
-        </div>
-
-        {recentVideos.length === 0 ? (
-          <div className="flex flex-col items-center border-y border-slate-200 bg-white px-6 py-12 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" className="h-6 w-6"><rect x="3" y="5" width="13" height="14" rx="2" /><path d="m16 10 5-3v10l-5-3" /></svg>
-            </span>
-            <h3 className="mt-4 text-base font-bold text-slate-900">Your workspace is ready</h3>
-            <p className="mt-1 max-w-md text-sm leading-6 text-slate-600">Upload your first video to start building a searchable timeline. Completed uploads will appear here during this session.</p>
-            <a href="#video-upload" className="mt-5 inline-flex min-h-10 items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800">Choose a video</a>
+          <div className="flex flex-col gap-3 px-5 py-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+            <span>Ready for processing, search, and timestamp review in the Dashboard workspace.</span>
+            <Link to={`/video/${workspaceVideo.id}`} state={{ videoUrl: workspaceVideo.videoUrl, filename: workspaceVideo.filename, duration: workspaceVideo.duration, status: workspaceVideo.status }} className="inline-flex items-center gap-1.5 font-bold text-blue-700 transition-colors hover:text-blue-900">
+              Open workspace <span aria-hidden="true">→</span>
+            </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {recentVideos.map((video) => (
-              <div
-                key={video.id}
-                className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-              >
-                <div className="relative flex aspect-16/7 items-center justify-center overflow-hidden bg-slate-900">
-                  <div className="absolute inset-0 bg-[linear-gradient(135deg,#172554_0%,#1d4ed8_52%,#0f172a_100%)] opacity-80" />
-                  <span className="relative flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="ml-0.5 h-5 w-5"><path d="M7 5.8c0-.8.9-1.3 1.6-.9l10 5.8a1 1 0 0 1 0 1.7l-10 5.8a1.05 1.05 0 0 1-1.6-.9V5.8Z" /></svg>
-                  </span>
-                  <span className="absolute left-3 top-2 rounded bg-slate-950/70 px-1.5 py-1 text-[10px] font-semibold text-white">Preview unavailable</span>
-                  <span className="absolute bottom-2 right-2 rounded bg-slate-950/80 px-1.5 py-1 text-xs font-semibold text-white">{formatTime(video.duration)}</span>
-                </div>
-                <div className="p-4">
-                  <div className="mb-3 flex items-start justify-between gap-3">
-                    <h3 className="min-w-0 truncate text-sm font-bold text-slate-950" title={video.filename}>{video.filename}</h3>
-                    <StatusBadge status={video.status} />
-                  </div>
-                  <p className="text-xs text-slate-500">Uploaded in this session</p>
-                  <div className="mt-4 border-t border-slate-100 pt-3">
-                    <Link to={`/video/${video.id}`} state={{ videoUrl: video.videoUrl, filename: video.filename, duration: video.duration, status: video.status }} className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 transition-colors hover:text-blue-900">
-                      Open workspace <span aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        </section>
+      )}
     </div>
   );
 }
